@@ -1,4 +1,8 @@
-function getRandomColor() {
+var BackGroundChangerMaker = function() {
+  this.usedColorsTable = {};
+}
+
+BackGroundChangerMaker.prototype.getRandomColor = function() {
   var digits = "0123456789ABCDEF";
   var color = '#';
   for (var i = 0; i < 6; i++) {
@@ -6,21 +10,27 @@ function getRandomColor() {
   }
   return color;
 }
-
-var usedColorsArray = [];
-
-function changeBackground() {
-  var newColor = getRandomColor();
-  while (usedColorsArray.indexOf(newColor) >= 0) {
-    newColor = getRandomColor();
+BackGroundChangerMaker.prototype.changeBackground = function() {
+  var newColor = this.getRandomColor();
+  while (this.usedColorsTable[newColor]) {
+    newColor = this.getRandomColor();
   }
   document.body.style.backgroundColor = newColor;
   document.body.style.transition = "all 1s ease-in-out";
-  usedColorsArray.push(newColor);
+  this.usedColorsTable[newColor] = true;
 }
 
-for (var i = 0; i < 10; i++) {
-  (function(j) {
-    setTimeout(changeBackground, j * 1000)
-  })(i)
+var BGChangerOne = new BackGroundChangerMaker();
+
+function backgroundLoop(interval, loops) {
+  for (var i = 0; i < loops; i++) {
+    (function(j) {
+      setTimeout(BGChangerOne.changeBackground.bind(BGChangerOne), j * interval)
+    })(i)
+  }
 }
+
+var interval = 1000;
+var loops = 10
+
+backgroundLoop(interval, loops);
